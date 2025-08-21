@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dme-extractor"
+version = "0.1.0"
+description = "DME extractor service and CLI"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "fastapi>=0.111.0",
+  "uvicorn[standard]>=0.30.0",
+  "spacy>=3.7.0",
+  "medspacy>=1.2.0",
+  "transformers>=4.42.0",
+  "torch>=2.2.0",
+  "scispacy>=0.5.4",
+]
+
+[project.scripts]
+dme-extract = "app.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+dme = ["resources/*.json"]

@@ -1,0 +1,69 @@
+{
+  "dme_terms": [
+    "CPAP",
+    "cpap mask",
+    "APAP",
+    "BiPAP",
+    "oxygen concentrator",
+    "oxygen tank",
+    "nebulizer",
+    "wheelchair",
+    "walker",
+    "hospital bed",
+    "bath bench",
+    "shower chair",
+    "hoyer lift",
+    "patient lift",
+    "pulse oximeter",
+    "commode"
+  ],
+  "regexes": [
+    {
+      "name": "HCPCS",
+      "pattern": "\\b([A-Z]\\d{4})\\b",
+      "flags": ["IGNORECASE"]
+    },
+    {
+      "name": "DURATION",
+      "pattern": "\\b(?:for|x)\\s*(\\d+)\\s*(day|days|week|weeks|month|months|year|years)\\b",
+      "flags": ["IGNORECASE"]
+    },
+    {
+      "name": "QUANTITY",
+      "pattern": "\\b(?:qty|quantity|x)\\s*[:\\-]?\\s*(\\d+)\\b|\\b(\\d+)\\s*(?:units?|each|ea|pcs?)\\b",
+      "flags": ["IGNORECASE"]
+    },
+    {
+      "name": "FLOW",
+      "pattern": "\\b(\\d+(?:\\.\\d+)?)\\s*(?:l\\\/?min|liters?\\\/?min|lpm)\\b",
+      "flags": ["IGNORECASE"]
+    },
+    {
+      "name": "PRESSURE",
+      "pattern": "\\b(\\d+(?:\\.\\d+)?)\\s*cm\\s*h2o\\b",
+      "flags": ["IGNORECASE"]
+    },
+    {
+      "name": "MASK_TYPE",
+      "pattern": "\\b(full face|nasal pillows?|nasal mask)\\b",
+      "flags": ["IGNORECASE"]
+    },
+    {
+      "name": "REASON",
+      "pattern": "\\b(?:for|due to|because of|secondary to|to help with|needed for)\\s+(.+?)(?=[\\.;,]|$)",
+      "flags": ["IGNORECASE"]
+    }
+  ],
+  "modifiers": [
+    "rental",
+    "rent",
+    "purchase",
+    "repair",
+    "replace",
+    "refill",
+    "supplies",
+    "accessories",
+    "delivery",
+    "setup"
+  ]
+}

@@ -1,0 +1,28 @@
+# Ignore VCS and editor files
+.git
+.gitignore
+.vscode/
+.idea/
+
+# Python caches and envs
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+.venv/
+venv/
+
+# Tests and local docs (not needed in runtime image)
+tests/
+**/README.md
+
+# Large data and outputs
+src/output/
+**/*.RRF
+**/*.rrf
+**/*.unqlite
+**/*.cdb
+**/*.simstring
+**/*.db
+
+# Other unneeded
+.DS_Store
