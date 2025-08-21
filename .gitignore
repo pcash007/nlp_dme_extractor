@@ -26,3 +26,17 @@ output/
 **/*.simstring
 **/*.cdb
 **/*.db
+
+# C#/.NET (scoped to csharp/)
+csharp/**/bin/
+csharp/**/obj/
+csharp/**/TestResults/
+csharp/**/.vs/
+csharp/**/artifacts/
+csharp/**/packages/
+
+# Any extracted/generated outputs under csharp/
+csharp/**/extracted/
+csharp/**/extractions/
+csharp/**/output/
+.DS_Store

@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>DmeExtractorAgent</RootNamespace>
+    <LangVersion>preview</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AssemblyName>DmeExtractorAgent</AssemblyName>
+    <Description>Agent to call Python NLP DME Extractor and post results to Notification API</Description>
+  <OutputType>Exe</OutputType>
+  <StartupObject>DmeExtractorAgent.EntryPoint</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+  <PackageReference Include="System.Net.Http.Json" Version="8.0.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
+  </ItemGroup>
+</Project>
