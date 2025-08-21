@@ -1,2 +1,28 @@
 __pycache__/
-*.pyc
+**/*.pyc
+**/*.pyo
+.pytest_cache/
+.DS_Store
+
+# Python virtual environments
+.venv/
+venv/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Editors/IDE
+.vscode/
+.idea/
+
+# Large data and generated outputs
+src/output/
+output/
+**/*.RRF
+**/*.rrf
+**/*.unqlite
+**/*.simstring
+**/*.cdb
+**/*.db
