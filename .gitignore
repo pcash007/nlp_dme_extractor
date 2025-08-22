@@ -40,3 +40,5 @@ csharp/**/extracted/
 csharp/**/extractions/
 csharp/**/output/
 .DS_Store
+
+.fake

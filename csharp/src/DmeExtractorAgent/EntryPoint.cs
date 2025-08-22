@@ -11,7 +11,7 @@ public static class EntryPoint
 {
     public static async Task<int> Main(string[] args)
     {
-        // Minimal arg scan (no Spectre): check for --serve and simple overrides
+        // Minimal arg scan (no Spectre): check for --serve and simple overrides.
         var overrides = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         string? dmeText = null;
 
@@ -29,7 +29,7 @@ public static class EntryPoint
                     if (i + 1 < args.Length) overrides["Agent:NotificationUrl"] = args[++i];
                     break;
                 case "--threshold":
-                    if (i + 1 < args.Length && double.TryParse(args[i + 1], out var th)) { overrides["Agent:Threshold"] = args[++i]; }
+                    if (i + 1 < args.Length && double.TryParse(args[i + 1], out _)) { overrides["Agent:Threshold"] = args[++i]; }
                     break;
                 default:
                     // First non-option token and rest as text
@@ -47,6 +47,7 @@ internal static class ManualRunner
 {
     public static async Task<int> RunAsync(string? textArg, IDictionary<string, string> overrides)
     {
+        
         // Build a lightweight generic host (no WebApplication) and register our core services
         var host = Host.CreateDefaultBuilder()
         .ConfigureAppConfiguration((ctx, cfg) =>
@@ -63,10 +64,12 @@ internal static class ManualRunner
             })
             .Build();
 
-    var orchestrator = host.Services.GetRequiredService<ExtractionOrchestrator>();
-    var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
-    var logger = loggerFactory.CreateLogger("ManualRunner");
+        var orchestrator = host.Services.GetRequiredService<ExtractionOrchestrator>();
+        var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+        var logger = loggerFactory.CreateLogger("ManualRunner");
+        logger.LogInformation("Command line Invocation");
 
+        // provide a sample text if one isn't provided, only in CLI
         var text = string.IsNullOrWhiteSpace(textArg)
             ? "Patient needs a CPAP with full face mask and humidifier. AHI > 20. Ordered by Dr. Cameron."
             : textArg;

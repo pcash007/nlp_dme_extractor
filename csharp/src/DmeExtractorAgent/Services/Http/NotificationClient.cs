@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Serilog;
 
-namespace DmeExtractorAgent;
+namespace DmeExtractorAgent.Services.Http;
 
 public class NotificationClient : DmeExtractorAgent.Services.INotificationClient
 {

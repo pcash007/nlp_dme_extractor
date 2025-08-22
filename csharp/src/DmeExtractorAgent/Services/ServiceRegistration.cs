@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using DmeExtractorAgent;
 using DmeExtractorAgent.Services;
+using DmeExtractorAgent.Services.Http;
 
 namespace DmeExtractorAgent.Services;
 

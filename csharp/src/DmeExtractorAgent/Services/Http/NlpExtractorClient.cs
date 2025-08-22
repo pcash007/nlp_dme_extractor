@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Serilog;
 using Microsoft.Extensions.Logging;
 
-namespace DmeExtractorAgent;
+namespace DmeExtractorAgent.Services.Http;
 
 public class NlpExtractorClient : DmeExtractorAgent.Services.INlpExtractorClient
 {
