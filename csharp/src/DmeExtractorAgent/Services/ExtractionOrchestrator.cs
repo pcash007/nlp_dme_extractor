@@ -27,9 +27,24 @@ public class ExtractionOrchestrator
     {
         var threshold = double.TryParse(_config["Agent:Threshold"], out var t) ? t : 0.45;
         _logger.LogInformation("ExtractionOrchestrator using threshold {Threshold}", threshold);
-
-        var result = await _extractor.ExtractAsync(text, threshold);
-        var posted = await _notifications.PostAsync(result);
-        return posted;
+        try
+        {
+            var result = await _extractor.ExtractAsync(text, threshold);
+            try
+            {
+                var posted = await _notifications.PostAsync(result);
+                return posted;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Notification post failed");
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Extraction failed; skipping notification post");
+            return false;
+        }
     }
 }

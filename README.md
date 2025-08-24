@@ -5,11 +5,12 @@
 - TODOs - Expand logging and strengthen error handling
 - Limitations 
     - Some details may diverge from idiomatic C# and Python (My primary expertise is Java); This prototype prioritized end‑to‑end function over perfect conventions.
-    - HTTP invocation and CLI; file upload is not implemented
 - Notes
+	- In addition to CLI and file input, HTTP POST is also supported
     - The notification endpoint defaults to the echo service at https://httpbin.org/post and can be changed via configuration. 
     - Solution built using AI-assisted workflows
-- Jump to the [Quick start](#quick-start) section to get started
+- Jump to the [Demo scripts](#demo-scripts) to run the services via demo scripts. (Windows batch file not tested)
+- Jump to the [Quick start](#quick-start) section to start services manually
 
 
 
@@ -28,6 +29,15 @@ It is composed of two parts:
 
 High-level flow:
 1) Input text → 2) Python extractor → 3) Extracted payload → 4) C# agent posts to Notification API
+
+## Demo scripts
+- note: first run can be slow as the model is getting built
+- macOS/Linux:
+	- `bash demo/run_demo.sh`
+- Windows (PowerShell):
+	- `./demo/run_demo.ps1` (Powershell script is not tested, in case of errors switch to [Quick Start](quick_start)
+ to test manually.
+	- These scripts set up the Python venv, start the extractor service, and run the C# agent with `--file drnote.txt`.
 
 ## Quick start
 
@@ -57,7 +67,6 @@ C# agent:
     - The output of the curl command will be a simple JSON `{"posted":true}` if the POST to notification URL was successful
     - To see the payload that was returned from the DME Extractor and sent to notification, switch to the terminal where DmeExtractorAgent server is running.
 
-
 ## Usage
 
 - Python CLI:
@@ -68,6 +77,10 @@ C# agent:
 
 - C# Agent CLI (one-off):
 	- `dotnet run --project csharp/src/DmeExtractorAgent -- "text here" --nlp-url http://localhost:8000 --notifications-url https://example.com --threshold 0.5`
+
+- C# Agent CLI with file input:
+	- `dotnet run --project csharp/src/DmeExtractorAgent -- --file "/path/to/note.txt" --nlp-url http://localhost:8000 --notifications-url https://example.com`
+	- Note: If both a file and CLI text are provided, the file contents take precedence and the CLI text is ignored.
 
 - C# Agent HTTP API:
 	- `POST /process` with `{ "text": "..." }` to trigger extract → notify pipeline.

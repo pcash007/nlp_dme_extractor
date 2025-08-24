@@ -37,6 +37,19 @@ dotnet run --project src/DmeExtractorAgent -- \
 	--notifications-url https://example.com
 ```
 
+### Run (one-off CLI) with file input
+```bash
+# From csharp/
+DOTNET_ENVIRONMENT=Production \
+dotnet run --project src/DmeExtractorAgent -- \
+	--file "/absolute/path/to/note.txt" \
+	--nlp-url http://localhost:8000 \
+	--notifications-url https://example.com
+```
+
+Notes:
+- When `--file` is provided alongside CLI text, the file contents take precedence and the free-text argument is ignored.
+
 ## Run (HTTP server)
 ```bash
 # From csharp/

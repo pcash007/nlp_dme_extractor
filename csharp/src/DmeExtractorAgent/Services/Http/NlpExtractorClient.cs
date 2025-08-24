@@ -29,17 +29,19 @@ public class NlpExtractorClient : DmeExtractorAgent.Services.INlpExtractorClient
         _logger.LogInformation("Posting received DME text to NLP Extractor API at {BaseAddress}", _http.BaseAddress);
         var payload = new { text };
         var resp = await _http.PostAsJsonAsync("/extract", payload);
-        var result = await resp.Content.ReadFromJsonAsync<object>();
-        result ??= new { };
         if (resp.IsSuccessStatusCode)
         {
+            var result = await resp.Content.ReadFromJsonAsync<object>() ?? new { };
             _logger.LogInformation("NLP Extractor API response {StatusCode}: {Body}", (int)resp.StatusCode, result);
+            return result;
         }
         else
         {
-            _logger.LogError("NLP Extractor API error {StatusCode}: {Body}", (int)resp.StatusCode, result);
+            var errorBody = await resp.Content.ReadAsStringAsync();
+            _logger.LogError("NLP Extractor API error {StatusCode}: {Body}", (int)resp.StatusCode, errorBody);
+            resp.EnsureSuccessStatusCode(); // throws
+            throw new HttpRequestException($"NLP extractor call failed with status {(int)resp.StatusCode}");
         }
-        return result;
 
     }
 }

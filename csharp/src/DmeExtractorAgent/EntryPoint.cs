@@ -14,6 +14,7 @@ public static class EntryPoint
         // Minimal arg scan (no Spectre): check for --serve and simple overrides.
         var overrides = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         string? dmeText = null;
+    string? filePath = null;
 
         for (int i = 0; i < args.Length; i++)
         {
@@ -31,6 +32,9 @@ public static class EntryPoint
                 case "--threshold":
                     if (i + 1 < args.Length && double.TryParse(args[i + 1], out _)) { overrides["Agent:Threshold"] = args[++i]; }
                     break;
+                case "--file":
+                    if (i + 1 < args.Length) filePath = args[++i];
+                    break;
                 default:
                     // First non-option token and rest as text
                     dmeText = string.Join(' ', args.Skip(i));
@@ -39,13 +43,13 @@ public static class EntryPoint
             }
         }
 
-        return await ManualRunner.RunAsync(dmeText, overrides);
+        return await ManualRunner.RunAsync(dmeText, filePath, overrides);
     }
 }
 
 internal static class ManualRunner
 {
-    public static async Task<int> RunAsync(string? textArg, IDictionary<string, string> overrides)
+    public static async Task<int> RunAsync(string? textArg, string? filePath, IDictionary<string, string> overrides)
     {
         
         // Build a lightweight generic host (no WebApplication) and register our core services
@@ -69,16 +73,36 @@ internal static class ManualRunner
         var logger = loggerFactory.CreateLogger("ManualRunner");
         logger.LogInformation("Command line Invocation");
 
-        // provide a sample text if one isn't provided, only in CLI
-        var text = string.IsNullOrWhiteSpace(textArg)
-            ? "Patient needs a CPAP with full face mask and humidifier. AHI > 20. Ordered by Dr. Cameron."
-            : textArg;
+        // Prefer file input when provided, otherwise use CLI text, otherwise a sample
+        string text;
+        if (!string.IsNullOrWhiteSpace(filePath))
+        {
+            try
+            {
+                logger.LogInformation("Reading input from file: {Path}", filePath);
+                text = await System.IO.File.ReadAllTextAsync(filePath);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to read file: {Path}", filePath);
+                return 1;
+            }
+        }
+        else if (!string.IsNullOrWhiteSpace(textArg))
+        {
+            text = textArg;
+        }
+        else
+        {
+            // provide a sample text if none was provided
+            text = "Patient needs a CPAP with full face mask and humidifier. AHI > 20. Ordered by Dr. Cameron.";
+        }
 
         var ok = await orchestrator.RunOnceAsync(text);
         if (ok)
             logger.LogInformation("Posted to notification API");
         else
-            logger.LogError("Failed to post to notification API");
+            logger.LogError("Error occured. Look for previous errors in the log");
         return ok ? 0 : 1;
     }
 }

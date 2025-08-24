@@ -25,17 +25,26 @@ public class NotificationClient : DmeExtractorAgent.Services.INotificationClient
 
     public async Task<bool> PostAsync(object result)
     {
-        _logger.LogInformation("Posting extracted result to notification API at {BaseAddress}", _http.BaseAddress);
-        var resp = await _http.PostAsJsonAsync("", result);
-        var body = await resp.Content.ReadAsStringAsync();
-        if (resp.IsSuccessStatusCode)
+        try
         {
-            _logger.LogInformation("Notification API response {StatusCode}: {Body}", (int)resp.StatusCode, body);
+            _logger.LogInformation("Posting extracted result to notification API at {BaseAddress}", _http.BaseAddress);
+            var resp = await _http.PostAsJsonAsync("", result);
+            var body = await resp.Content.ReadAsStringAsync();
+            if (resp.IsSuccessStatusCode)
+            {
+                _logger.LogInformation("Notification API response {StatusCode}: {Body}", (int)resp.StatusCode, body);
+                return true;
+            }
+            else
+            {
+                _logger.LogError("Notification API error {StatusCode}: {Body}", (int)resp.StatusCode, body);
+                return false;
+            }
         }
-        else
+        catch (Exception ex)
         {
-            _logger.LogError("Notification API error {StatusCode}: {Body}", (int)resp.StatusCode, body);
+            _logger.LogError(ex, "Notification API call failed");
+            return false;
         }
-        return resp.IsSuccessStatusCode;
     }
 }

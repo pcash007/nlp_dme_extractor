@@ -1,0 +1,7 @@
+Doctor: Hi, I'm Dr. Alice Nguyen. I see you’ve been more short of breath at night.
+Patient: Yes, I'm John Carter. I wake up gasping.
+Doctor: Your sleep study confirms OSA. We'll order a CPAP with nasal mask and tubing (E0601) for 3 months, rental initially, for OSA.
+Patient: Do I also need oxygen?
+Doctor: Not at rest, your SpO2 is fine. No wheelchair at home.
+Patient: Understood.
+Doctor: For daytime fatigue due to OSA, CPAP at 10 cm H2O should help. Arrange delivery and setup.

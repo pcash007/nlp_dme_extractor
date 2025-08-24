@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Net.Sockets;
 using DmeExtractorAgent.Web;
 using FluentAssertions;
@@ -101,6 +102,61 @@ public class EntryPointProcessTests
         proc.Start();
         await proc.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(20));
         proc.ExitCode.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task Main_Manual_Uses_File_Content_When_File_Is_Provided()
+    {
+        // Prepare a temp file with known content
+        var tmpFile = Path.GetTempFileName();
+        var fileText = "TEXT_FROM_FILE";
+        await File.WriteAllTextAsync(tmpFile, fileText);
+        var cliText = "TEXT_FROM_CLI";
+
+        string? capturedPostedText = null;
+
+        // Stub extractor that captures the posted text
+        await using var extractor = await StartStubApp(app =>
+        {
+            app.MapPost("/extract", async (HttpRequest req) =>
+            {
+                using var doc = await JsonDocument.ParseAsync(req.Body);
+                if (doc.RootElement.TryGetProperty("text", out var textProp))
+                {
+                    capturedPostedText = textProp.GetString();
+                }
+                return Results.Json(new { mentions = Array.Empty<object>() });
+            });
+        });
+
+        // Stub notifier
+        await using var notifier = await StartStubApp(map: app => app.MapPost("/", () => Results.Ok()));
+
+        var solutionDir = FindSolutionDir();
+        var projectPath = Path.Combine(solutionDir, "src", "DmeExtractorAgent");
+
+        using var proc = new Process();
+        proc.StartInfo = new ProcessStartInfo
+        {
+            FileName = "dotnet",
+            // Place overrides before any free-text to ensure they are parsed
+            Arguments = $"run --project \"{projectPath}\" -- --nlp-url {extractor.BaseAddress} --notifications-url {notifier.BaseAddress} --file \"{tmpFile}\" {cliText}",
+            WorkingDirectory = solutionDir,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+        };
+        proc.StartInfo.Environment["DOTNET_ENVIRONMENT"] = "Production";
+
+        proc.Start();
+        await proc.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(20));
+        proc.ExitCode.Should().Be(0);
+
+        // Ensure the extractor received the file contents, not the CLI text
+        capturedPostedText.Should().Be(fileText);
+
+        // Cleanup temp file
+        try { File.Delete(tmpFile); } catch { /* ignore */ }
     }
 
     private static async Task<bool> WaitUntilAsync(Func<Task<bool>> condition, TimeSpan timeout, TimeSpan pollInterval)
